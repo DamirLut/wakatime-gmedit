@@ -3,10 +3,9 @@ const { join } = require('path');
 const fs = require('fs');
 const shell = require('electron').shell;
 
-var lastFile, lastTimeSend, currentDir, currentProject, apiKey;
+var lastFile, lastTimeSend, currentDir, currentProject, apiKey, cli;
 
 function WakaTimeCli() {
-  const cli = join(currentDir, './wakatime-cli');
   const args = Array.from(arguments);
   args.push(`--project "${currentProject}"`);
   args.push('--language "Game Maker Language"');
@@ -32,6 +31,14 @@ function WakaTimeCliFile(file, save = false) {
   GMEdit.register('gm-wakatime', {
     init: function (state) {
       currentDir = state.dir;
+
+      const files = fs.readdirSync(currentDir);
+
+      files.forEach((file) => {
+        if (file.includes('wakatime-cli')) {
+          cli = join(currentDir, file);
+        }
+      });
 
       try {
         const config = fs.readFileSync(join(currentDir, 'wakatime.api'), 'utf-8');
